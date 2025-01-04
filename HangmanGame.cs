@@ -1,4 +1,5 @@
-﻿using HangmanOscar;
+﻿using Hangman_OJ;
+using Spectre.Console;
 
 public class HangmanGame
 {
@@ -13,8 +14,8 @@ public class HangmanGame
 
     public void Play()
     {
-        Console.WriteLine("Welcome to Hangman");
-        Console.WriteLine("-----------------------------------------");
+        AnsiConsole.MarkupLine("[bold green]Welcome to Hangman[/]");
+        AnsiConsole.MarkupLine("[blue]-----------------------------------------[/]");
 
         string randomWord = _wordManager.GetRandomWord();
         List<char> guessedLetters = new List<char>();
@@ -27,15 +28,24 @@ public class HangmanGame
 
         while (wrongGuesses < 6 && correctGuesses < wordLength)
         {
-            Console.Write("\nLetters guessed so far: ");
-            guessedLetters.ForEach(c => Console.Write(c + " "));
+            AnsiConsole.Markup("[yellow]\nLetters guessed so far:[/] ");
+            guessedLetters.ForEach(c => AnsiConsole.Markup($"[white]{c} [/]"));
 
-            Console.Write("\nGuess a letter: ");
-            char guessedLetter = Console.ReadLine()![0];
+            AnsiConsole.Markup("\n[yellow]Guess a letter: [/] ");
+            char guessedLetter;
+            try
+            {
+                guessedLetter = Console.ReadLine()![0];
+            }
+            catch
+            {
+                AnsiConsole.MarkupLine("[red]Invalid input. Please enter a single letter.[/]");
+                continue;
+            }
 
             if (guessedLetters.Contains(guessedLetter))
             {
-                Console.WriteLine("\nYou have already guessed this letter.");
+                AnsiConsole.MarkupLine("[red]\nYou have already guessed this letter.[/]");
             }
             else
             {
@@ -53,28 +63,30 @@ public class HangmanGame
             }
         }
 
-        Console.WriteLine(wrongGuesses < 6 ? "\nCongratulations, you won!" : "\nGame Over! The word was: " + randomWord);
+        AnsiConsole.MarkupLine(wrongGuesses < 6
+            ? "[bold green]\nCongratulations, you won![/]"
+            : $"[bold red]\nGame Over! The word was: {randomWord}[/]");
     }
 
     private int DisplayWordState(string word, List<char> guessedLetters)
     {
         int correctGuesses = 0;
-        Console.Write("\n");
+        AnsiConsole.Markup("\n");
 
         foreach (char c in word)
         {
             if (guessedLetters.Contains(c))
             {
-                Console.Write(c + " ");
+                AnsiConsole.Markup($"[green]{c} [/]");
                 correctGuesses++;
             }
             else
             {
-                Console.Write("_ ");
+                AnsiConsole.Markup("[white]_ [/]");
             }
         }
 
-        Console.WriteLine();
+        AnsiConsole.MarkupLine("");
         return correctGuesses;
     }
 }
